@@ -1,4 +1,4 @@
-package com.bookaroom.web.advice;
+package com.bookaroom.web.handlers;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartException;
 public class GlobalExceptionHandler
 {
     @ExceptionHandler(MultipartException.class)
-    public String handleError1(MultipartException e)
+    public String handleMultipartError(MultipartException e)
     {
         e.printStackTrace();
 

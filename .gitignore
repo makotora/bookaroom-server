@@ -1,0 +1,4 @@
+/target/
+/.settings/
+/log/**
+/src/main/resources/dynamic/**

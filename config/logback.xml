@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>%d{ISO8601} [%thread] [%-5level] %logger{36} - %msg %n</Pattern>
+			<!--  Pattern>%d{ISO8601} [%thread] %highlight([%-5level]) %logger{36} - %msg %n</Pattern -->
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+	</appender>
+
+	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>./log/${HOSTNAME}.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>./log/server.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<maxHistory>90</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>%d{ISO8601} [%thread] %-5level [%c] %msg %n</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+	</appender>
+	
+	<!-- This will be displayed on console appender only -->
+	<!-- >logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug" additivity="false">
+		<appender-ref ref="consoleAppender" />
+	</logger-->
+	
+	<logger name="org.springframework" level="info" additivity="true" />
+	
+	<logger name="org.apache" level="info" additivity="true" />
+
+	<logger name="com.camelroute" level="info" additivity="true" />
+	
+	<logger name="com.bookaroom" level="debug" additivity="true" />
+
+	<root level="debug">
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="dailyRollingFileAppender" />
+	</root>
+</configuration>

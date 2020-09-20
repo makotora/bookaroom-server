@@ -8,9 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FILE_UPLOADS")
+@Table(name = FileUploadDTO.TABLE_NAME)
 public class FileUploadDTO
 {
+    public static final String TABLE_NAME = "FILE_UPLOADS";
 
     @Column(name = "ID")
     @Id

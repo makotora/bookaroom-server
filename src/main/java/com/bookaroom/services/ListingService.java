@@ -1,5 +1,6 @@
 package com.bookaroom.services;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -9,10 +10,12 @@ import com.bookaroom.entities.ListingDTO;
 import com.bookaroom.enums.ListingType;
 import com.bookaroom.exceptions.ListingNotFoundException;
 import com.bookaroom.exceptions.ProvisioningException;
+import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.web.dto.AvailabilityRange;
 import com.bookaroom.web.dto.ListingResponse;
+import com.bookaroom.web.dto.ListingShortViewResponse;
 
 public interface ListingService
 {
@@ -76,4 +79,7 @@ public interface ListingService
     public void deleteByUser(Long userId)
         throws UserNotFoundException, UserNotAuthorizedException, ListingNotFoundException,
         ProvisioningException;
+
+    public List<ListingShortViewResponse> findRecommendededListingByPrincipal(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException;
 }

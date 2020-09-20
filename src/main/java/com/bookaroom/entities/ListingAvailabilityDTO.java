@@ -9,9 +9,11 @@ import javax.persistence.Table;
 import com.bookaroom.entities.keys.ListingAvailabilityPK;
 
 @Entity
-@Table(name = "LISTING_AVAILABILITY")
+@Table(name = ListingAvailabilityDTO.TABLE_NAME)
 public class ListingAvailabilityDTO implements Serializable
 {
+    public static final String TABLE_NAME = "LISTING_AVAILABILITY";
+
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId

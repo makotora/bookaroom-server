@@ -1,5 +1,8 @@
 package com.bookaroom.services.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +27,7 @@ import com.bookaroom.enums.ListingType;
 import com.bookaroom.exceptions.InvalidDateRangeException;
 import com.bookaroom.exceptions.ListingNotFoundException;
 import com.bookaroom.exceptions.ProvisioningException;
+import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.repositories.ListingDAO;
@@ -37,6 +41,7 @@ import com.bookaroom.util.Constants;
 import com.bookaroom.util.Utils;
 import com.bookaroom.web.dto.AvailabilityRange;
 import com.bookaroom.web.dto.ListingResponse;
+import com.bookaroom.web.dto.ListingShortViewResponse;
 
 @Service("Listings")
 public class ListingServiceImpl implements ListingService
@@ -389,11 +394,36 @@ public class ListingServiceImpl implements ListingService
         listingDAO.delete(userListing);
     }
 
-    private String preparePicturePath(String path)
+    public static String preparePicturePath(String path)
     {
         return Utils.prepareResourcePathForServerFile(Constants.LISTING_PICTURES_DIRECTORY,
                                                       path,
                                                       Constants.LISTING_PICTURES_RESOURCE_HANDLER_PATH);
+    }
+
+    @Override
+    public List<ListingShortViewResponse> findRecommendededListingByPrincipal(Principal principal) throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = users.findByPrincipal(principal);
+        
+        // TODO get recommended by user searches (later by machine learning)
+        
+        return getListingShortViewList(listingDAO.findAllShortViews());
+    }
+
+    private List<ListingShortViewResponse> getListingShortViewList(List<Object[]> rows)
+    {
+        return rows.stream().map(cols -> getListingShortViewObject(cols)).collect(Collectors.toList());
+    }
+
+    private ListingShortViewResponse getListingShortViewObject(Object[] cols)
+    {
+        return new ListingShortViewResponse(((BigInteger) cols[0]).longValue(),
+                                            (String) cols[1],
+                                            (Double) cols[2],
+                                            cols[3] == null ? null
+                                                            : ListingServiceImpl.preparePicturePath((String) cols[3]),
+                                            ((BigDecimal) cols[4]).doubleValue());
     }
 
 }

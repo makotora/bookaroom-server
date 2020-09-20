@@ -7,9 +7,5 @@ import org.springframework.stereotype.Repository;
 import com.bookaroom.entities.ListingDTO;
 
 @Repository
-public interface ListingDAO
-    extends
-        JpaRepository<ListingDTO, Long>,
-        ListingDAOCustom,
-        JpaSpecificationExecutor<ListingDTO>
+public interface ListingReviewDAO extends JpaRepository<ListingDTO, Long>, JpaSpecificationExecutor<ListingDTO>
 {}

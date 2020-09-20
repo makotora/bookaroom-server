@@ -174,11 +174,7 @@ public class UserServiceImpl implements UserService
     public UserDTO findAndAuthorizeByPrincipal(Principal principal, Set<UserRole> acceptableRoles)
         throws UserNotAuthenticatedException, UserNotFoundException, UserNotAuthorizedException
     {
-        if (principal == null) {
-            throw new UserNotAuthenticatedException();
-        }
-
-        UserDTO user = findByUsername(principal.getName());
+        UserDTO user = findByPrincipal(principal);
 
         authorizeUser(user, acceptableRoles);
 
@@ -204,6 +200,17 @@ public class UserServiceImpl implements UserService
         userDAO.saveAndFlush(user);
 
         return user;
+    }
+
+    @Override
+    public UserDTO findByPrincipal(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        if (principal == null) {
+            throw new UserNotAuthenticatedException();
+        }
+
+        return findByUsername(principal.getName());
     }
 
 }

@@ -9,9 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Searches")
+@Table(name = SearchDTO.TABLE_NAME)
 public class SearchDTO implements Serializable
 {
+    public static final String TABLE_NAME = "SEARCHES";
+
     private static final long serialVersionUID = 1L;
 
     @Column(name = "listing_id")

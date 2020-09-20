@@ -48,4 +48,7 @@ public interface UserService extends UserDetailsService
     public UserDTO changePassword(String username, String oldPassword, String newPassword)
         throws ServiceException;
 
+    public UserDTO findByPrincipal(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException;
+
 }

@@ -12,9 +12,10 @@ import javax.persistence.Table;
 import com.bookaroom.enums.UserRole;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = UserDTO.TABLE_NAME)
 public class UserDTO
 {
+    public static final String TABLE_NAME = "USERS";
 
     private static final long serialVersionUID = 1L;
 

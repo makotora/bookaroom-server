@@ -11,9 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Reservations")
+@Table(name = ReservationDTO.TABLE_NAME)
 public class ReservationDTO implements Serializable
 {
+    public static final String TABLE_NAME = "RESERVATIONS";
+
     private static final long serialVersionUID = 1L;
 
     @Id

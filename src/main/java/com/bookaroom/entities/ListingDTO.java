@@ -9,14 +9,41 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
 import com.bookaroom.enums.ListingType;
 
+@NamedNativeQueries({
+    @NamedNativeQuery(
+        name = ListingDTO.QUERY_NAME_FIND_ALL_SHORT_VIEWS,
+        // @formatter:off
+        query = "  SELECT"
+              + "    l.ID," // 0
+              + "    l.ADDRESS," // 1
+              + "    l.MIN_PRICE + l.EXTRA_GUEST_COST as total_cost," // 2
+              + "    fu.SERVER_PATH," // 3
+              + "    ("
+              + "      SELECT AVG(rating)"
+              + "      FROM " + ListingReviewDTO.TABLE_NAME + " lr"
+              + "      WHERE lr.LISTING_ID = l.ID"
+              + "    ) as average_rating" // 4
+              + "    FROM " + ListingDTO.TABLE_NAME + " l"
+              + "    JOIN " + FileUploadDTO.TABLE_NAME + " fu"
+              + "    on fu.ID = l.MAIN_PICTURE_FILE_ID"
+        // @formatter:on
+    )
+})
 @Entity
-@Table(name = "LISTINGS")
+@Table(name = ListingDTO.TABLE_NAME)
 public class ListingDTO implements Serializable
 {
+    public static final String TABLE_NAME = "LISTINGS";
+
+    public static final String QUERY_NAME_PREFIX = "ListingDTO.";
+    public static final String QUERY_NAME_FIND_ALL_SHORT_VIEWS = QUERY_NAME_PREFIX + "findAllShortViews";
+
     private static final long serialVersionUID = 1L;
 
     @Column(name = "ID")

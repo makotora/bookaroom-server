@@ -31,6 +31,7 @@ import com.bookaroom.util.Constants;
 import com.bookaroom.web.dto.ActionResponse;
 import com.bookaroom.web.dto.AvailabilityRange;
 import com.bookaroom.web.dto.ListingResponse;
+import com.bookaroom.web.dto.ListingShortViewResponse;
 
 @RestController
 @RequestMapping("listings")
@@ -370,6 +371,21 @@ public class ListingsRestEndpoint
     private ActionResponse getFailureResponse(String message)
     {
         return new ActionResponse(false, message);
+    }
+
+    @RequestMapping(path = "/getUserRecommendedListings", method = RequestMethod.GET)
+    public List<ListingShortViewResponse> getUserRecommendedListings(Principal principal)
+    {
+        try {
+            return listings.findRecommendededListingByPrincipal(principal);
+        }
+        catch (UserNotFoundException | UserNotAuthenticatedException e) {
+            if (Constants.DEBUG) {
+                e.printStackTrace();
+            }
+
+            return new ArrayList<ListingShortViewResponse>();
+        }
     }
 
 }

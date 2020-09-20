@@ -8,9 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "LISTING_PICTURES")
+@Table(name = ListingPictureDTO.TABLE_NAME)
 public class ListingPictureDTO
 {
+    public static final String TABLE_NAME = "LISTING_PICTURES";
 
     @Id
     @Column(name = "ID")

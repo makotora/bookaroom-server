@@ -8,6 +8,8 @@ public class ListingShortViewResponse
 
     private Double cost;
 
+    private String currency;
+
     private String mainImagePath;
 
     private Double averageRating;
@@ -19,6 +21,7 @@ public class ListingShortViewResponse
         Long id,
         String address,
         Double cost,
+        String currency,
         String mainImagePath,
         Double averageRating)
     {
@@ -26,6 +29,7 @@ public class ListingShortViewResponse
         this.id = id;
         this.address = address;
         this.cost = cost;
+        this.currency = currency;
         this.mainImagePath = mainImagePath;
         this.averageRating = averageRating;
     }
@@ -60,6 +64,16 @@ public class ListingShortViewResponse
         this.cost = cost;
     }
 
+    public String getCurrency()
+    {
+        return currency;
+    }
+
+    public void setCurrency(String currency)
+    {
+        this.currency = currency;
+    }
+
     public String getMainImagePath()
     {
         return mainImagePath;
@@ -89,11 +103,14 @@ public class ListingShortViewResponse
                + address
                + ", cost="
                + cost
+               + ", currency="
+               + currency
                + ", mainImagePath="
                + mainImagePath
                + ", averageRating="
                + averageRating
                + "]";
     }
+
 
 }

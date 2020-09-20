@@ -421,9 +421,10 @@ public class ListingServiceImpl implements ListingService
         return new ListingShortViewResponse(((BigInteger) cols[0]).longValue(),
                                             (String) cols[1],
                                             (Double) cols[2],
+                                            Constants.DEFAULT_CURRENCY,
                                             cols[3] == null ? null
                                                             : ListingServiceImpl.preparePicturePath((String) cols[3]),
-                                            ((BigDecimal) cols[4]).doubleValue());
+                                            cols[4] == null ? null : ((BigDecimal) cols[4]).doubleValue());
     }
 
 }

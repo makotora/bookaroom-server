@@ -23,4 +23,6 @@ public class Constants
 
     public static final String USER_PICTURES_RESOURCE_HANDLER = "userPictures";
     public static final String LISTING_PICTURES_RESOURCE_HANDLER_PATH = "listingPictures";
+
+    public static final String DEFAULT_CURRENCY = "\u20ac";
 }

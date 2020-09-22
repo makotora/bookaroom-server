@@ -2,11 +2,13 @@ package com.bookaroom.web.endpoints;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -378,6 +380,36 @@ public class ListingsRestEndpoint
     {
         try {
             return listings.findRecommendededListingByPrincipal(principal);
+        }
+        catch (UserNotFoundException | UserNotAuthenticatedException e) {
+            if (Constants.DEBUG) {
+                e.printStackTrace();
+            }
+
+            return new ArrayList<ListingShortViewResponse>();
+        }
+    }
+
+    @RequestMapping(path = "/search", method = RequestMethod.GET)
+    public List<ListingShortViewResponse> search(
+        Principal principal,
+        @RequestParam(name = "state", required = true) String state,
+        @RequestParam(name = "city", required = true) String city,
+        @RequestParam(name = "country", required = true) String country,
+        @RequestParam(name = "checkIn", required = true) @DateTimeFormat(
+            pattern = Constants.DEFAULT_DATE_FORMAT) Date checkIn,
+        @RequestParam(name = "checkOut", required = true) @DateTimeFormat(
+            pattern = Constants.DEFAULT_DATE_FORMAT) Date checkOut,
+        @RequestParam(name = "numberOfGuests", required = true) Integer numberOfGuests)
+    {
+        try {
+            return listings.searchByPrincipal(principal,
+                                              state,
+                                              city,
+                                              country,
+                                              checkIn,
+                                              checkOut,
+                                              numberOfGuests);
         }
         catch (UserNotFoundException | UserNotAuthenticatedException e) {
             if (Constants.DEBUG) {

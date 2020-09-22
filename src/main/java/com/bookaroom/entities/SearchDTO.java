@@ -5,8 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = SearchDTO.TABLE_NAME)
@@ -16,88 +20,59 @@ public class SearchDTO implements Serializable
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "listing_id")
+    @Column(name = "ID")
     @Id
-    private Long listingId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "bathrooms")
-    private Integer bathrooms;
+    @Column(name = "USER_ID")
+    private Long userId;
 
-    @Column(name = "bedroooms")
-    private Integer bedrooms;
-
-    @Column(name = "beds")
-    private Integer beds;
-
-    @Column(name = "price")
-    private String price;
-
-    @Column(name = "user")
-    private String user;
-
-    @Column(name = "state")
+    @Column(name = "STATE")
     private String state;
 
-    @Column(name = "city")
+    @Column(name = "CITY")
     private String city;
 
-    @Column(name = "country")
+    @Column(name = "COUNTRY")
     private String country;
 
-    @Column(name = "BEGIN_DATE", columnDefinition = "DATE")
-    private Date beginDate;
+    @Column(name = "CHECK_IN")
+    @Temporal(TemporalType.DATE)
+    private Date checkIn;
 
-    @Column(name = "END_DATE", columnDefinition = "DATE")
-    private Date endDate;
+    @Column(name = "CHECK_OUT")
+    @Temporal(TemporalType.DATE)
+    private Date checkOut;
 
-    public Integer getBathrooms()
+    @Column(name = "NUM_OF_GUESTS")
+    private Integer numberOfGuests;
+
+    @Column(name = "SEARCH_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date searchDate;
+
+    public SearchDTO()
+    {}
+
+    public Long getId()
     {
-        return bathrooms;
+        return id;
     }
 
-    public void setBathrooms(Integer bathrooms)
+    public void setId(Long id)
     {
-        this.bathrooms = bathrooms;
+        this.id = id;
     }
 
-    public Integer getBedrooms()
+    public Long getUserId()
     {
-        return bedrooms;
+        return userId;
     }
 
-    public void setBedrooms(Integer bedrooms)
+    public void setUserId(Long userId)
     {
-        this.bedrooms = bedrooms;
-    }
-
-    public Integer getBeds()
-    {
-        return beds;
-    }
-
-    public void setBeds(Integer beds)
-    {
-        this.beds = beds;
-    }
-
-    public String getPrice()
-    {
-        return price;
-    }
-
-    public void setPrice(String price)
-    {
-        this.price = price;
-    }
-
-    public String getUser()
-    {
-        return user;
-    }
-
-    public void setUser(String user)
-    {
-        this.user = user;
+        this.userId = userId;
     }
 
     public String getState()
@@ -130,24 +105,70 @@ public class SearchDTO implements Serializable
         this.country = country;
     }
 
-    public Date getBeginDate()
+    public Date getCheckIn()
     {
-        return beginDate;
+        return checkIn;
     }
 
-    public void setBeginDate(Date beginDate)
+    public void setCheckIn(Date checkIn)
     {
-        this.beginDate = beginDate;
+        this.checkIn = checkIn;
     }
 
-    public Date getEndDate()
+    public Date getCheckOut()
     {
-        return endDate;
+        return checkOut;
     }
 
-    public void setEndDate(Date endDate)
+    public void setCheckOut(Date checkOut)
     {
-        this.endDate = endDate;
+        this.checkOut = checkOut;
     }
+
+    public Integer getNumberOfGuests()
+    {
+        return numberOfGuests;
+    }
+
+    public void setNumberOfGuests(Integer numberOfGuests)
+    {
+        this.numberOfGuests = numberOfGuests;
+    }
+
+    public Date getSearchDate()
+    {
+        return searchDate;
+    }
+
+    public void setSearchDate(Date searchDate)
+    {
+        this.searchDate = searchDate;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SearchDTO [id="
+               + id
+               + ", userId="
+               + userId
+               + ", state="
+               + state
+               + ", city="
+               + city
+               + ", country="
+               + country
+               + ", checkIn="
+               + checkIn
+               + ", checkOut="
+               + checkOut
+               + ", numberOfGuests="
+               + numberOfGuests
+               + ", searchDate="
+               + searchDate
+               + "]";
+    }
+
+
 
 }

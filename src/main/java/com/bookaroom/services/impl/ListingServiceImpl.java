@@ -3,6 +3,7 @@ package com.bookaroom.services.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +37,7 @@ import com.bookaroom.services.FileUploadService;
 import com.bookaroom.services.ListingAvailabilityService;
 import com.bookaroom.services.ListingPictureService;
 import com.bookaroom.services.ListingService;
+import com.bookaroom.services.SearchService;
 import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
 import com.bookaroom.util.Utils;
@@ -62,6 +64,9 @@ public class ListingServiceImpl implements ListingService
 
     @Autowired
     private UserService users;
+
+    @Autowired
+    private SearchService searches;
 
     public ListingServiceImpl()
     {}
@@ -409,6 +414,26 @@ public class ListingServiceImpl implements ListingService
         // TODO get recommended by user searches (later by machine learning)
         
         return getListingShortViewList(listingDAO.findAllShortViews());
+    }
+
+    @Override
+    public List<ListingShortViewResponse> searchByPrincipal(
+        Principal principal,
+        String state,
+        String city,
+        String country,
+        Date checkIn,
+        Date checkOut,
+        Integer numberOfGuests)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = users.findByPrincipal(principal);
+        
+        searches.saveSearch(user.getId(), state, city, country, checkIn, checkOut, numberOfGuests);
+
+        // TODO the actual search
+
+        return new ArrayList<>();
     }
 
     private List<ListingShortViewResponse> getListingShortViewList(List<Object[]> rows)

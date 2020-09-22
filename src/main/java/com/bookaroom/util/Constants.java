@@ -25,4 +25,6 @@ public class Constants
     public static final String LISTING_PICTURES_RESOURCE_HANDLER_PATH = "listingPictures";
 
     public static final String DEFAULT_CURRENCY = "\u20ac";
+
+    public static final String DEFAULT_DATE_FORMAT = "dd-MM-yyyy";
 }

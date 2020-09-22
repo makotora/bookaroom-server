@@ -5,21 +5,20 @@ import java.util.List;
 
 import com.bookaroom.entities.SearchDTO;
 
-public interface Searches
+public interface SearchService
 {
 
-    public SearchDTO addSearch(
-        Integer bathrooms,
-        Integer bedrooms,
-        Integer beds,
-        String price,
-        String user,
+    public SearchDTO saveSearch(
+        Long userId,
         String state,
         String city,
         String country,
-        Date beginDate,
-        Date endDate);
+        Date checkIn,
+        Date checkOut,
+        Integer numberOfGuests);
 
     List<SearchDTO> findAll();
+
+    List<SearchDTO> findByUserId(Long userId);
 
 }

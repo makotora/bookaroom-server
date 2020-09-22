@@ -82,4 +82,14 @@ public interface ListingService
 
     public List<ListingShortViewResponse> findRecommendededListingByPrincipal(Principal principal)
         throws UserNotFoundException, UserNotAuthenticatedException;
+
+    public List<ListingShortViewResponse> searchByPrincipal(
+        Principal principal,
+        String state,
+        String city,
+        String country,
+        Date checkIn,
+        Date checkOut,
+        Integer numberOfGuests)
+        throws UserNotFoundException, UserNotAuthenticatedException;
 }

@@ -446,7 +446,7 @@ public class ListingServiceImpl implements ListingService
     {
         return new ListingShortViewResponse(((BigInteger) cols[0]).longValue(),
                                             (String) cols[1],
-                                            (Double) cols[2],
+                                            cols[2] == null ? null : Utils.roundDouble((Double) cols[2], 2),
                                             Constants.DEFAULT_CURRENCY,
                                             cols[3] == null ? null
                                                             : ListingServiceImpl.preparePicturePath((String) cols[3]),

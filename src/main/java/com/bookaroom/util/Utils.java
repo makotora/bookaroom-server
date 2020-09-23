@@ -1,5 +1,7 @@
 package com.bookaroom.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -96,5 +98,13 @@ public class Utils
                                                         parentDirectoryPath.relativize(Paths.get(filePath))
                                                                            .toString())
                                                    .toString());
+    }
+
+    public static double roundDouble(double d, int places)
+    {
+
+        BigDecimal bigDecimal = new BigDecimal(Double.toString(d));
+        bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 }

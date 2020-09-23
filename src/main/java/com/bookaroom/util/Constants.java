@@ -27,4 +27,7 @@ public class Constants
     public static final String DEFAULT_CURRENCY = "\u20ac";
 
     public static final String DEFAULT_DATE_FORMAT = "dd-MM-yyyy";
+
+    public static final int MAX_DAYS_AFTER_SEARCH = 90;
+    public static final int MAX_RECOMMENDATIONS = 10;
 }

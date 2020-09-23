@@ -62,14 +62,6 @@ public interface ListingService
         List<MultipartFile> listingPictureFiles)
         throws ProvisioningException;
 
-    public List<ListingDTO> findListing(
-        String state,
-        String city,
-        String country,
-        int people,
-        Date inDate,
-        Date outDate);
-
     public ListingDTO findById(long id)
         throws ListingNotFoundException;
 
@@ -92,4 +84,10 @@ public interface ListingService
         Date checkOut,
         Integer numberOfGuests)
         throws UserNotFoundException, UserNotAuthenticatedException;
+
+    List<ListingDTO> advancedSearch(
+        String state,
+        String city,
+        String country,
+        int people);
 }

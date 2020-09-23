@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -257,13 +256,11 @@ public class ListingServiceImpl implements ListingService
     }
 
     @Override
-    public List<ListingDTO> findListing(
+    public List<ListingDTO> advancedSearch(
         String state,
         String city,
         String country,
-        int people,
-        Date inDate,
-        Date outDate)
+        int people)
     {
         log.info("START findListing");
         SpecificationsBuilder specsBuilder = new SpecificationsBuilder();
@@ -290,18 +287,8 @@ public class ListingServiceImpl implements ListingService
         catch (Exception e) {
             e.printStackTrace();
         }
-        long diff = outDate.getTime() - inDate.getTime();
-        int daysDist = (int) (diff / (1000 * 24 * 60 * 60));
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(inDate);
-        calendar.add(Calendar.DATE, -1);
-        Date beforeFrom = calendar.getTime();
-        System.out.println(matchingListings.size());
-        // matchingListings.removeIf(listing -> ! listingIsAvailable(listing,
-        // beforeFrom, inDate, outDate, daysDist));
         Collections.sort(matchingListings,
                          (l1, l2) -> getListingTotalPrice(l1, people).compareTo(getListingTotalPrice(l2, people)));
-        System.out.println(matchingListings);
 
         return matchingListings;
 
@@ -411,9 +398,9 @@ public class ListingServiceImpl implements ListingService
     {
         UserDTO user = users.findByPrincipal(principal);
         
-        // TODO get recommended by user searches (later by machine learning)
-        
-        return getListingShortViewList(listingDAO.findAllShortViews());
+        return getListingShortViewList(listingDAO.findUserRecommendedShortViews(user.getId(),
+                                                                                Constants.MAX_DAYS_AFTER_SEARCH,
+                                                                                Constants.MAX_RECOMMENDATIONS));
     }
 
     @Override

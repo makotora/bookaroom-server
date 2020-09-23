@@ -22,17 +22,53 @@ import com.bookaroom.enums.ListingType;
         query = "  SELECT"
               + "    l.ID," // 0
               + "    l.ADDRESS," // 1
-              + "    l.MIN_PRICE + l.EXTRA_GUEST_COST as total_cost," // 2
+              + "    l.MIN_PRICE + l.EXTRA_GUEST_COST as TOTAL_COST," // 2
               + "    fu.SERVER_PATH," // 3
               + "    ("
               + "      SELECT AVG(rating)"
               + "      FROM " + ListingReviewDTO.TABLE_NAME + " lr"
               + "      WHERE lr.LISTING_ID = l.ID"
-              + "    ) as average_rating" // 4
+              + "    ) as AVERAGE_RATING" // 4
               + "    FROM " + ListingDTO.TABLE_NAME + " l"
               + "    JOIN " + FileUploadDTO.TABLE_NAME + " fu"
               + "    on fu.ID = l.MAIN_PICTURE_FILE_ID"
         // @formatter:on
+    ),
+    @NamedNativeQuery(
+        name = ListingDTO.QUERY_NAME_FIND_USER_RECOMMENDED_SHORT_VIEWS,
+        // @formatter:off
+        query = "  SELECT"
+              + "    x.LISTING_ID," // 0
+              + "    x.ADDRESS," // 1
+              + "    x.TOTAL_COST," // 2
+              + "    x.MAIN_PIC_PATH," // 3
+              + "    x.AVERAGE_RATING" // 4
+              + "  FROM ("
+              + "      SELECT"
+              + "        l.ID as LISTING_ID,"
+              + "        l.ADDRESS as ADDRESS,"
+              + "        l.MIN_PRICE + l.EXTRA_GUEST_COST as TOTAL_COST,"
+              + "        fu.SERVER_PATH as MAIN_PIC_PATH,"
+              + "        ("
+              + "          SELECT AVG(rating)"
+              + "          FROM LISTING_REVIEWS lr"
+              + "          WHERE lr.LISTING_ID = l.ID"
+              + "        ) as AVERAGE_RATING"
+              + "      FROM LISTINGS l"
+              + "      JOIN FILE_UPLOADS fu"
+              + "        on fu.ID = l.MAIN_PICTURE_FILE_ID"
+              + "      WHERE EXISTS ("
+              + "        SELECT 1"
+              + "        FROM SEARCHES s"
+              + "        WHERE s.user_id = ?" + ListingDTO.QUERY_PARAM_INDEX_USER_ID
+              + "        AND datediff(NOW(), s.search_date) <= ?" + ListingDTO.QUERY_PARAM_INDEX_MAX_DAYS_AFTER_SEARCH
+              + "        AND l.address like CONCAT('%', s.state, '%')"
+              + "        AND l.address like CONCAT('%', s.city, '%')"
+              + "        AND l.address like CONCAT('%', s.country, '%')"
+              + "      )"
+              + "  ) x"
+              + "  ORDER BY x.AVERAGE_RATING LIMIT ?" + ListingDTO.QUERY_PARAM_INDEX_MAX_RESULTS
+         // @formatter:on
     )
 })
 @Entity
@@ -43,6 +79,12 @@ public class ListingDTO implements Serializable
 
     public static final String QUERY_NAME_PREFIX = "ListingDTO.";
     public static final String QUERY_NAME_FIND_ALL_SHORT_VIEWS = QUERY_NAME_PREFIX + "findAllShortViews";
+    public static final String QUERY_NAME_FIND_USER_RECOMMENDED_SHORT_VIEWS = QUERY_NAME_PREFIX
+                                                                              + "findUserRecommendedShortViews";
+
+    public static final int QUERY_PARAM_INDEX_USER_ID = 1;
+    public static final int QUERY_PARAM_INDEX_MAX_DAYS_AFTER_SEARCH = 2;
+    public static final int QUERY_PARAM_INDEX_MAX_RESULTS = 3;
 
     private static final long serialVersionUID = 1L;
 

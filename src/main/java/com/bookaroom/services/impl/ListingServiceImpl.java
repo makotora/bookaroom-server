@@ -66,9 +66,6 @@ public class ListingServiceImpl implements ListingService
     @Autowired
     private SearchService searches;
 
-    public ListingServiceImpl()
-    {}
-
     @Transactional
     @Override
     public ListingDTO create(

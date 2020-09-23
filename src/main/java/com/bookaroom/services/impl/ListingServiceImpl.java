@@ -3,7 +3,6 @@ package com.bookaroom.services.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -433,9 +432,12 @@ public class ListingServiceImpl implements ListingService
         
         searches.saveSearch(user.getId(), state, city, country, checkIn, checkOut, numberOfGuests);
 
-        // TODO the actual search
-
-        return new ArrayList<>();
+        return getListingShortViewList(listingDAO.searchShortViews(state,
+                                                                   city,
+                                                                   country,
+                                                                   checkIn,
+                                                                   checkOut,
+                                                                   numberOfGuests));
     }
 
     private List<ListingShortViewResponse> getListingShortViewList(List<Object[]> rows)

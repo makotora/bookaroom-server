@@ -51,25 +51,72 @@ import com.bookaroom.enums.ListingType;
               + "        fu.SERVER_PATH as MAIN_PIC_PATH,"
               + "        ("
               + "          SELECT AVG(rating)"
-              + "          FROM LISTING_REVIEWS lr"
+              + "          FROM " + ListingReviewDTO.TABLE_NAME + " lr"
               + "          WHERE lr.LISTING_ID = l.ID"
               + "        ) as AVERAGE_RATING"
-              + "      FROM LISTINGS l"
-              + "      JOIN FILE_UPLOADS fu"
+              + "      FROM " + ListingDTO.TABLE_NAME + " l"
+              + "      JOIN " + FileUploadDTO.TABLE_NAME + " fu"
               + "        on fu.ID = l.MAIN_PICTURE_FILE_ID"
               + "      WHERE EXISTS ("
               + "        SELECT 1"
-              + "        FROM SEARCHES s"
-              + "        WHERE s.user_id = ?" + ListingDTO.QUERY_PARAM_INDEX_USER_ID
-              + "        AND datediff(NOW(), s.search_date) <= ?" + ListingDTO.QUERY_PARAM_INDEX_MAX_DAYS_AFTER_SEARCH
+              + "        FROM " + SearchDTO.TABLE_NAME + " s"
+              + "        WHERE s.user_id = ?" + ListingDTO.QUERY_PARAM_RECOMM_INDEX_USER_ID
+              + "        AND datediff(NOW(), s.search_date) <= ?" + ListingDTO.QUERY_PARAM_RECOMM_INDEX_MAX_DAYS_AFTER_SEARCH
               + "        AND l.address like CONCAT('%', s.state, '%')"
               + "        AND l.address like CONCAT('%', s.city, '%')"
               + "        AND l.address like CONCAT('%', s.country, '%')"
               + "      )"
               + "  ) x"
-              + "  ORDER BY x.AVERAGE_RATING LIMIT ?" + ListingDTO.QUERY_PARAM_INDEX_MAX_RESULTS
+              + "  ORDER BY x.AVERAGE_RATING LIMIT ?" + ListingDTO.QUERY_PARAM_RECOMM_INDEX_MAX_RESULTS
          // @formatter:on
-    )
+    ),
+    @NamedNativeQuery(
+        name = ListingDTO.QUERY_NAME_SEARCH_SHORT_VIEWS,
+        // @formatter:off
+        query = "  SELECT" 
+              + "    x.LISTING_ID,"
+              + "    x.ADDRESS,"
+              + "    x.TOTAL_COST,"
+              + "    x.MAIN_PIC_PATH,"
+              + "    x.AVERAGE_RATING"
+              + "  FROM ("
+              + "      SELECT"
+              + "        l.ID as LISTING_ID,"
+              + "        l.ADDRESS as ADDRESS ,"
+              + "        l.MIN_PRICE + (l.EXTRA_GUEST_COST * ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_NUM_OF_GUESTS + ") as TOTAL_COST,"
+              + "        fu.SERVER_PATH as MAIN_PIC_PATH,"
+              + "        ("
+              + "          SELECT AVG(rating)"
+              + "          FROM " + ListingReviewDTO.TABLE_NAME + " lr"
+              + "          WHERE lr.LISTING_ID = l.ID"
+              + "        ) as AVERAGE_RATING"
+              + "      FROM " + ListingDTO.TABLE_NAME + " l"
+              + "      JOIN " + FileUploadDTO.TABLE_NAME + " fu"
+              + "        on fu.ID = l.MAIN_PICTURE_FILE_ID"
+              + "      WHERE"
+              + "        ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_NUM_OF_GUESTS + " <= l.MAX_GUESTS"
+              + "        AND l.address like CONCAT('%', ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_STATE + ", '%')"
+              + "        AND l.address like CONCAT('%', ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CITY + ", '%')"
+              + "        AND l.address like CONCAT('%', ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_COUNTRY + ", '%')"
+              + "        AND ("
+              + "          SELECT COUNT(*)"
+              + "          FROM " + ListingAvailabilityDTO.TABLE_NAME + " la"
+              + "          WHERE la.LISTING_ID = l.ID"
+              + "          AND la.date >= ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_IN
+              + "          AND la.date < ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_OUT
+              + "        ) = DATEDIFF(?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_OUT + ", ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_IN + ")"
+              + "        AND NOT EXISTS ("
+              + "          SELECT 1"
+              + "          FROM " + ReservationDTO.TABLE_NAME + " r"
+              + "          WHERE"
+              + "            r.LISTING_ID = l.ID"
+              + "            AND ?" +ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_IN + " < r.END_DATE"
+              + "            AND r.BEGIN_DATE < ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_OUT
+              + "        )"
+              + "  ) x"
+              + "  ORDER BY x.TOTAL_COST ASC")  
+        // @formatter:on
+
 })
 @Entity
 @Table(name = ListingDTO.TABLE_NAME)
@@ -81,10 +128,18 @@ public class ListingDTO implements Serializable
     public static final String QUERY_NAME_FIND_ALL_SHORT_VIEWS = QUERY_NAME_PREFIX + "findAllShortViews";
     public static final String QUERY_NAME_FIND_USER_RECOMMENDED_SHORT_VIEWS = QUERY_NAME_PREFIX
                                                                               + "findUserRecommendedShortViews";
+    public static final String QUERY_NAME_SEARCH_SHORT_VIEWS = QUERY_NAME_PREFIX + "searchShortViews";
 
-    public static final int QUERY_PARAM_INDEX_USER_ID = 1;
-    public static final int QUERY_PARAM_INDEX_MAX_DAYS_AFTER_SEARCH = 2;
-    public static final int QUERY_PARAM_INDEX_MAX_RESULTS = 3;
+    public static final int QUERY_PARAM_RECOMM_INDEX_USER_ID = 1;
+    public static final int QUERY_PARAM_RECOMM_INDEX_MAX_DAYS_AFTER_SEARCH = 2;
+    public static final int QUERY_PARAM_RECOMM_INDEX_MAX_RESULTS = 3;
+
+    public static final int QUERY_PARAM_SEARCH_INDEX_STATE = 1;
+    public static final int QUERY_PARAM_SEARCH_INDEX_CITY = 2;
+    public static final int QUERY_PARAM_SEARCH_INDEX_COUNTRY = 3;
+    public static final int QUERY_PARAM_SEARCH_INDEX_CHECK_IN = 4;
+    public static final int QUERY_PARAM_SEARCH_INDEX_CHECK_OUT = 5;
+    public static final int QUERY_PARAM_SEARCH_INDEX_NUM_OF_GUESTS = 6;
 
     private static final long serialVersionUID = 1L;
 

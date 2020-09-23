@@ -51,4 +51,10 @@ public interface UserService extends UserDetailsService
     public UserDTO findByPrincipal(Principal principal)
         throws UserNotFoundException, UserNotAuthenticatedException;
 
+    public boolean userHasListing(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException;
+
+    public boolean userIsHost(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException;
+
 }

@@ -213,4 +213,22 @@ public class UserServiceImpl implements UserService
         return findByUsername(principal.getName());
     }
 
+    @Override
+    public boolean userHasListing(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = findByPrincipal(principal);
+
+        return user.getListingId() != null;
+    }
+
+    @Override
+    public boolean userIsHost(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = findByPrincipal(principal);
+
+        return user.getUserRole() == UserRole.Host;
+    }
+
 }

@@ -23,8 +23,11 @@ import com.bookaroom.exceptions.EntityNotFoundException;
 import com.bookaroom.exceptions.OldPasswordNotMatchException;
 import com.bookaroom.exceptions.ProvisioningException;
 import com.bookaroom.exceptions.ServiceException;
+import com.bookaroom.exceptions.UserNotAuthenticatedException;
+import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.services.UserService;
 import com.bookaroom.web.dto.ActionResponse;
+import com.bookaroom.web.dto.BooleanResponse;
 import com.bookaroom.web.dto.ChangePasswordRequest;
 
 @RestController
@@ -33,9 +36,7 @@ public class UsersRestEndpoint
 {
 
     @Autowired
-    private UserService userService;
-
-    SecurityContextHolder securityContextHolder;
+    private UserService users;
 
     @RequestMapping(
         value = "/register",
@@ -63,7 +64,7 @@ public class UsersRestEndpoint
         }
 
         try {
-            userService.create(username, password, name, surname, email, phone, userRole, userImage);
+            users.create(username, password, name, surname, email, phone, userRole, userImage);
         }
         catch (ProvisioningException e) {
             e.printStackTrace();
@@ -94,7 +95,7 @@ public class UsersRestEndpoint
 
             if (username != null) {
                 try {
-                    userService.changePassword(username, request.getOldPassword(), request.getNewPassword());
+                    users.changePassword(username, request.getOldPassword(), request.getNewPassword());
                 }
                 catch (EntityNotFoundException e) {
                     new ActionResponse(false, "Not authenticated");
@@ -112,6 +113,20 @@ public class UsersRestEndpoint
         }
 
         return new ActionResponse(true, "Password changed successfully");
+    }
+
+    @RequestMapping(value = "/userIsHost", method = RequestMethod.GET)
+    public BooleanResponse userIsHost(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        return new BooleanResponse(users.userIsHost(principal));
+    }
+
+    @RequestMapping(value = "/userHasListing", method = RequestMethod.GET)
+    public BooleanResponse userHasListing(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        return new BooleanResponse(users.userHasListing(principal));
     }
 
 }

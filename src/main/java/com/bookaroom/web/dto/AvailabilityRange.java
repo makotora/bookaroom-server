@@ -5,11 +5,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.bookaroom.util.Constants;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 public class AvailabilityRange implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
+    @JsonSerialize(as = Date.class)
+    @JsonFormat(pattern = "dd-MM-yyyy", timezone = Constants.DEFAULT_TIMEZONE)
     private Date from;
+
+    @JsonSerialize(as = Date.class)
+    @JsonFormat(pattern = "dd-MM-yyyy", timezone = Constants.DEFAULT_TIMEZONE)
     private Date to;
 
     public AvailabilityRange()

@@ -30,7 +30,7 @@ public class Utils
         currentDateCal.setTime(from);
         Date currentDate = currentDateCal.getTime();
 
-        while (!currentDate.after(to)) {
+        while (currentDate.before(to)) {
             dates.add(currentDate);
 
             currentDateCal.add(Calendar.DAY_OF_MONTH, 1);
@@ -51,25 +51,39 @@ public class Utils
         // Sort availability dates ascending
         availabilities.sort((av1, av2) -> av1.compareTo(av2));
 
-        Date currentFrom = availabilities.get(0);
-        Date currentTo = currentFrom;
+        Date currentFirstDay = availabilities.get(0);
+        Date currentLastDay = currentFirstDay;
 
         for (int i = 1; i < availabilities.size(); i++) {
             Date loopDate = availabilities.get(i);
-            int daysBetween = Days.daysBetween(new DateTime(currentTo), new DateTime(loopDate)).getDays();
+            int daysBetween = Days.daysBetween(new DateTime(currentLastDay), new DateTime(loopDate)).getDays();
             if (daysBetween == 1) {
-                currentTo = loopDate;
+                currentLastDay = loopDate;
             }
             else {
-                availabilityRanges.add(new AvailabilityRange(currentFrom, currentTo));
-                currentFrom = loopDate;
-                currentTo = loopDate;
+                availabilityRanges.add(getAvailabilityRange(currentFirstDay, currentLastDay));
+                currentFirstDay = loopDate;
+                currentLastDay = loopDate;
             }
         }
 
-        availabilityRanges.add(new AvailabilityRange(currentFrom, currentTo));
+        availabilityRanges.add(getAvailabilityRange(currentFirstDay, currentLastDay));
 
         return availabilityRanges;
+    }
+
+    public static AvailabilityRange getAvailabilityRange(Date firstDay, Date lastDay)
+    {
+        return new AvailabilityRange(firstDay, addDays(lastDay, 1));
+    }
+
+    public static Date addDays(Date date, int days)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DAY_OF_MONTH, days);
+
+        return cal.getTime();
     }
 
     public static String prepareResourcePathForServerFile(

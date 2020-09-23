@@ -118,6 +118,8 @@ public class ListingServiceImpl implements ListingService
         listingDAO.saveAndFlush(listing);
         Long listingId = listing.getId();
 
+        validateAvailabilityRanges(listingAvailabilityRanges);
+
         for (Date availabilityDate : getDistinctAvailabilityDates(listingAvailabilityRanges)) {
             listingAvailabilities.addListingAvailability(listingId, availabilityDate);
         }
@@ -198,6 +200,8 @@ public class ListingServiceImpl implements ListingService
         listing.setArea(area);
         listing.setHasLivingRoom(hasLivingRoom);
 
+        validateAvailabilityRanges(listingAvailabilityRanges);
+
         listingAvailabilities.deleteAllByListingId(listingId);
         for (Date availabilityDate : getDistinctAvailabilityDates(listingAvailabilityRanges)) {
             listingAvailabilities.addListingAvailability(listingId, availabilityDate);
@@ -221,6 +225,16 @@ public class ListingServiceImpl implements ListingService
         listingDAO.saveAndFlush(listing);
 
         return listing;
+    }
+
+    private void validateAvailabilityRanges(List<AvailabilityRange> listingAvailabilityRanges)
+        throws ProvisioningException
+    {
+        for (AvailabilityRange availabilityRange : listingAvailabilityRanges) {
+            if (!availabilityRange.getFrom().before(availabilityRange.getTo())) {
+                throw new ProvisioningException("Listing availability from date must be before the to date");
+            }
+        }
     }
 
     private UserDTO findAndAuthenticateUser(Long userId)
@@ -334,6 +348,7 @@ public class ListingServiceImpl implements ListingService
                                                                                                                       .map(av -> av.getId()
                                                                                                                                    .getDate())
                                                                                                                       .collect(Collectors.toList()));
+
         FileUploadDTO mainPictureFile = fileUploads.findById(userListing.getMainPictureFileUploadId());
         String mainImagePath = mainPictureFile == null ? null
                                                        : preparePicturePath(mainPictureFile.getServerPath());

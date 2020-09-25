@@ -25,7 +25,7 @@ public class ListingReviewDTO
     private Long userId;
 
     @Column(name = "RATING")
-    private Integer rating;
+    private Float rating;
 
     @Column(name = "COMMENTS")
     private String comments;
@@ -63,12 +63,12 @@ public class ListingReviewDTO
         this.userId = userId;
     }
 
-    public Integer getRating()
+    public Float getRating()
     {
         return rating;
     }
 
-    public void setRating(Integer rating)
+    public void setRating(Float rating)
     {
         this.rating = rating;
     }

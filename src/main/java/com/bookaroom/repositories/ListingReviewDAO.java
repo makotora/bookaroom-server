@@ -1,11 +1,21 @@
 package com.bookaroom.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.bookaroom.entities.ListingDTO;
+import com.bookaroom.entities.ListingReviewDTO;
 
 @Repository
-public interface ListingReviewDAO extends JpaRepository<ListingDTO, Long>, JpaSpecificationExecutor<ListingDTO>
-{}
+public interface ListingReviewDAO
+    extends
+        JpaRepository<ListingReviewDTO, Long>
+{
+    public List<ListingReviewDTO> findByListingIdAndUserId(Long listingId, Long userId);
+
+    @Query("SELECT r FROM ListingReviewDTO r, UserDTO u WHERE u.listingId = r.listingId AND u.id = :hostUserId")
+    public List<ListingReviewDTO> findByHostUserId(@Param("hostUserId") Long hostUserId);
+}

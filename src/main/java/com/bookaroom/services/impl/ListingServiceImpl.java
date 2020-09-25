@@ -1,6 +1,5 @@
 package com.bookaroom.services.impl;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.Collections;
@@ -452,7 +451,7 @@ public class ListingServiceImpl implements ListingService
                                             Constants.DEFAULT_CURRENCY,
                                             cols[3] == null ? null
                                                             : Utils.prepareListingPicturePath((String) cols[3]),
-                                            cols[4] == null ? null : ((BigDecimal) cols[4]).doubleValue());
+                                            cols[4] == null ? null : (Double) cols[4]);
     }
 
     @Override

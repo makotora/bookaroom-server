@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,12 +23,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bookaroom.entities.UserDTO;
 import com.bookaroom.enums.ListingType;
+import com.bookaroom.exceptions.ListingNotAvailableException;
 import com.bookaroom.exceptions.ListingNotFoundException;
 import com.bookaroom.exceptions.ProvisioningException;
 import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.services.ListingService;
+import com.bookaroom.services.ReservationService;
 import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
 import com.bookaroom.web.dto.ActionResponse;
@@ -35,6 +38,7 @@ import com.bookaroom.web.dto.AvailabilityRange;
 import com.bookaroom.web.dto.ListingFullViewResponse;
 import com.bookaroom.web.dto.ListingResponse;
 import com.bookaroom.web.dto.ListingShortViewResponse;
+import com.bookaroom.web.dto.ReservationRequest;
 
 @RestController
 @RequestMapping("listings")
@@ -48,6 +52,9 @@ public class ListingsRestEndpoint
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ReservationService reservations;
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -441,6 +448,32 @@ public class ListingsRestEndpoint
 
             return null;
         }
+    }
+
+    @RequestMapping(path = "/reserve", method = RequestMethod.POST)
+    public ActionResponse reserve(
+        Principal principal,
+        @RequestBody ReservationRequest reservationRequest)
+    {
+        try {
+            reservations.addReservation(principal,
+                                        reservationRequest.getListingId(),
+                                        reservationRequest.getCheckIn(),
+                                        reservationRequest.getCheckOut(),
+                                        reservationRequest.getNumberOfGuests());
+        }
+        catch (UserNotFoundException e) {
+            return new ActionResponse(false, "Invalid user");
+        }
+        catch (UserNotAuthenticatedException e) {
+            return new ActionResponse(false, "Please login again");
+        }
+        catch (ListingNotAvailableException e) {
+            return new ActionResponse(false,
+                                      "Listing is not available for reservation on the specified dates");
+        }
+        
+        return new ActionResponse(true, "Successfully reserved listing");
     }
 
 }

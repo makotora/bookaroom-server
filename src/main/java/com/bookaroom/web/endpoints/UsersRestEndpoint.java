@@ -29,6 +29,7 @@ import com.bookaroom.services.UserService;
 import com.bookaroom.web.dto.ActionResponse;
 import com.bookaroom.web.dto.BooleanResponse;
 import com.bookaroom.web.dto.ChangePasswordRequest;
+import com.bookaroom.web.dto.UserResponse;
 
 @RestController
 @RequestMapping("users")
@@ -76,6 +77,43 @@ public class UsersRestEndpoint
         }
 
         return new ActionResponse(true, "User registration complete");
+    }
+
+    @RequestMapping(
+        value = "/update",
+        method = RequestMethod.POST,
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ActionResponse update(
+        Principal principal,
+        @RequestPart("username") String username,
+        @RequestPart("password") String password,
+        @RequestPart("name") String name,
+        @RequestPart("surname") String surname,
+        @RequestPart("email") String email,
+        @RequestPart("phone") String phone,
+        @RequestPart("userRole") String userRoleStr,
+        @RequestParam("userImage") MultipartFile userImage)
+    {
+
+        System.out.println("got request " + username);
+
+        UserRole userRole = null;
+        try {
+            userRole = UserRole.valueOf(userRoleStr);
+        }
+        catch (Exception e) {
+            return new ActionResponse(false, "Invalid user role");
+        }
+
+        try {
+            users.update(principal, username, password, name, surname, email, phone, userRole, userImage);
+        }
+        catch (ProvisioningException | UserNotFoundException | UserNotAuthenticatedException e) {
+            e.printStackTrace();
+            return new ActionResponse(false, e.getMessage());
+        }
+
+        return new ActionResponse(true, "Profile was successfully updated");
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -127,6 +165,13 @@ public class UsersRestEndpoint
         throws UserNotFoundException, UserNotAuthenticatedException
     {
         return new BooleanResponse(users.userHasListing(principal));
+    }
+
+    @RequestMapping(value = "/getCurrentUser", method = RequestMethod.GET)
+    public UserResponse getCurrentUser(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        return users.getUserResponse(principal);
     }
 
 }

@@ -30,6 +30,8 @@ import com.bookaroom.repositories.UserDAO;
 import com.bookaroom.services.FileUploadService;
 import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
+import com.bookaroom.util.Utils;
+import com.bookaroom.web.dto.UserResponse;
 
 @Service("Users")
 public class UserServiceImpl implements UserService
@@ -71,12 +73,52 @@ public class UserServiceImpl implements UserService
         user.setName(name);
         user.setSurname(surname);
         user.setEmail(email);
+        user.setPhone(phone);
         user.setUserRole(userRole);
         user.setPictureFileUploadId(userImageFileUpload.getId());
 
         userDAO.save(user);
 
         return user;
+    }
+
+    @Override
+    @Transactional
+    public UserDTO update(
+        Principal principal,
+        String username,
+        String password,
+        String name,
+        String surname,
+        String email,
+        String phone,
+        UserRole userRole,
+        MultipartFile userImage)
+        throws UserNotFoundException, UserNotAuthenticatedException, ProvisioningException
+    {
+        UserDTO user = findByPrincipal(principal);
+
+        if (!user.getUsername().equals(username)) {
+            validateUsername(username);
+        }
+
+        fileUploads.deleteFile(user.getPictureFileUploadId());
+        FileUploadDTO userImageFileUpload = fileUploads.uploadFile(userImage,
+                                                                   Constants.USER_PICTURES_DIRECTORY,
+                                                                   username);
+        user.setUsername(username);
+        user.setPassword(userPasswordEncryptionService.encode(password));
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setUserRole(userRole);
+        user.setPictureFileUploadId(userImageFileUpload.getId());
+
+        userDAO.saveAndFlush(user);
+
+        return user;
+
     }
 
     private void validateUsername(String username)
@@ -242,5 +284,25 @@ public class UserServiceImpl implements UserService
         }
 
         return listingUsers.get(0);
+    }
+
+    @Override
+    public UserResponse getUserResponse(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = findByPrincipal(principal);
+
+        FileUploadDTO mainPictureFile = fileUploads.findById(user.getPictureFileUploadId());
+        String picturePath = Utils.prepareUserPicturePath(mainPictureFile.getServerPath());
+
+        return new UserResponse(user.getId(),
+                                user.getUsername(),
+                                user.getName(),
+                                user.getSurname(),
+                                user.getEmail(),
+                                user.getPhone(),
+                                user.getUserRole().name(),
+                                user.getDetails(),
+                                picturePath);
     }
 }

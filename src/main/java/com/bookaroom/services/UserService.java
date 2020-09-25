@@ -14,6 +14,7 @@ import com.bookaroom.exceptions.ServiceException;
 import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
+import com.bookaroom.web.dto.UserResponse;
 
 public interface UserService extends UserDetailsService
 {
@@ -59,5 +60,20 @@ public interface UserService extends UserDetailsService
 
     public UserDTO findByListingId(Long listingId)
         throws UserNotFoundException;
+
+    public UserResponse getUserResponse(Principal principal)
+        throws UserNotFoundException, UserNotAuthenticatedException;
+
+    public UserDTO update(
+        Principal principal,
+        String username,
+        String password,
+        String name,
+        String surname,
+        String email,
+        String phone,
+        UserRole userRole,
+        MultipartFile userImage)
+        throws UserNotFoundException, UserNotAuthenticatedException, ProvisioningException;
 
 }

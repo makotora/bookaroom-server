@@ -107,4 +107,18 @@ public class Utils
         bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
         return bigDecimal.doubleValue();
     }
+
+    public static String prepareListingPicturePath(String path)
+    {
+        return Utils.prepareResourcePathForServerFile(Constants.LISTING_PICTURES_DIRECTORY,
+                                                      path,
+                                                      Constants.LISTING_PICTURES_RESOURCE_HANDLER_PATH);
+    }
+
+    public static String prepareUserPicturePath(String path)
+    {
+        return Utils.prepareResourcePathForServerFile(Constants.USER_PICTURES_DIRECTORY,
+                                                      path,
+                                                      Constants.USER_PICTURES_RESOURCE_HANDLER);
+    }
 }

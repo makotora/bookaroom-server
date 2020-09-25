@@ -14,6 +14,7 @@ import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.web.dto.AvailabilityRange;
+import com.bookaroom.web.dto.ListingFullViewResponse;
 import com.bookaroom.web.dto.ListingResponse;
 import com.bookaroom.web.dto.ListingShortViewResponse;
 
@@ -62,7 +63,7 @@ public interface ListingService
         List<MultipartFile> listingPictureFiles)
         throws ProvisioningException;
 
-    public ListingDTO findById(long id)
+    public ListingDTO findById(Long id)
         throws ListingNotFoundException;
 
     public ListingResponse getUserListingResponse(Long userId)
@@ -90,4 +91,14 @@ public interface ListingService
         String city,
         String country,
         int people);
+
+    public ListingFullViewResponse view(
+        Principal principal,
+        Long listingId,
+        Date checkIn,
+        Date checkOut,
+        Integer numberOfGuests)
+        throws ListingNotFoundException, UserNotFoundException, UserNotAuthenticatedException;
+
+    public boolean isAvailableOnDates(Long listingId, Date checkIn, Date checkOut);
 }

@@ -32,6 +32,7 @@ import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
 import com.bookaroom.web.dto.ActionResponse;
 import com.bookaroom.web.dto.AvailabilityRange;
+import com.bookaroom.web.dto.ListingFullViewResponse;
 import com.bookaroom.web.dto.ListingResponse;
 import com.bookaroom.web.dto.ListingShortViewResponse;
 
@@ -417,6 +418,28 @@ public class ListingsRestEndpoint
             }
 
             return new ArrayList<ListingShortViewResponse>();
+        }
+    }
+
+    @RequestMapping(path = "/view", method = RequestMethod.GET)
+    public ListingFullViewResponse view(
+        Principal principal,
+        @RequestParam(name = "listingId", required = true) Long listingId,
+        @RequestParam(name = "checkIn", required = false) @DateTimeFormat(
+            pattern = Constants.DEFAULT_DATE_FORMAT) Date checkIn,
+        @RequestParam(name = "checkOut", required = false) @DateTimeFormat(
+            pattern = Constants.DEFAULT_DATE_FORMAT) Date checkOut,
+        @RequestParam(name = "numberOfGuests", required = false) Integer numberOfGuests)
+    {
+        try {
+            return listings.view(principal, listingId, checkIn, checkOut, numberOfGuests);
+        }
+        catch (ListingNotFoundException | UserNotFoundException | UserNotAuthenticatedException e) {
+            if (Constants.DEBUG) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 

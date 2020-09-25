@@ -27,7 +27,7 @@ public class ListingAvailabilityServiceImpl implements ListingAvailabilityServic
     ListingAvailabilityDAO listingAvailabilityDAO;
 
     @Autowired
-    ReservationsImpl reservationsService;
+    ReservationServiceImpl reservationsService;
 
     @Override
     @Transactional

@@ -110,11 +110,49 @@ import com.bookaroom.enums.ListingType;
               + "          FROM " + ReservationDTO.TABLE_NAME + " r"
               + "          WHERE"
               + "            r.LISTING_ID = l.ID"
-              + "            AND ?" +ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_IN + " < r.END_DATE"
-              + "            AND r.BEGIN_DATE < ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_OUT
+              + "            AND ?" +ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_IN + " < r.CHECK_OUT"
+              + "            AND r.CHECK_IN < ?" + ListingDTO.QUERY_PARAM_SEARCH_INDEX_CHECK_OUT
               + "        )"
               + "  ) x"
-              + "  ORDER BY x.TOTAL_COST ASC")  
+              + "  ORDER BY x.TOTAL_COST ASC"),
+        // @formatter:on
+    @NamedNativeQuery(name = ListingDTO.QUERY_NAME_GET_IF_IS_AVAILABLE,
+    // @formatter:off
+        query = "  SELECT"
+              + "    l.ID as LISTING_ID"
+              + "  FROM "
+              + ListingDTO.TABLE_NAME
+              + " l"
+              + "  WHERE l.ID = ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_LISTING_ID
+              + "  AND ("
+              + "    SELECT COUNT(*)"
+              + "    FROM "
+              + ListingAvailabilityDTO.TABLE_NAME
+              + "    la"
+              + "    WHERE la.LISTING_ID = l.ID"
+              + "    AND la.date >= ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_IN
+              + "    AND la.date < ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_OUT
+              + "  ) = DATEDIFF(?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_OUT
+              + ", ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_IN
+              + ")"
+              + "  AND NOT EXISTS ("
+              + "    SELECT 1"
+              + "    FROM "
+              + ReservationDTO.TABLE_NAME
+              + "    r"
+              + "    WHERE"
+              + "    r.LISTING_ID = l.ID"
+              + "    AND ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_IN
+              + "    < r.CHECK_OUT"
+              + "    AND r.CHECK_IN < ?"
+              + ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_OUT
+              + "  )")
         // @formatter:on
 
 })
@@ -129,6 +167,7 @@ public class ListingDTO implements Serializable
     public static final String QUERY_NAME_FIND_USER_RECOMMENDED_SHORT_VIEWS = QUERY_NAME_PREFIX
                                                                               + "findUserRecommendedShortViews";
     public static final String QUERY_NAME_SEARCH_SHORT_VIEWS = QUERY_NAME_PREFIX + "searchShortViews";
+    public static final String QUERY_NAME_GET_IF_IS_AVAILABLE = QUERY_NAME_PREFIX + "getIfIsAvailable";
 
     public static final int QUERY_PARAM_RECOMM_INDEX_USER_ID = 1;
     public static final int QUERY_PARAM_RECOMM_INDEX_MAX_DAYS_AFTER_SEARCH = 2;
@@ -140,6 +179,10 @@ public class ListingDTO implements Serializable
     public static final int QUERY_PARAM_SEARCH_INDEX_CHECK_IN = 4;
     public static final int QUERY_PARAM_SEARCH_INDEX_CHECK_OUT = 5;
     public static final int QUERY_PARAM_SEARCH_INDEX_NUM_OF_GUESTS = 6;
+
+    public static final int QUERY_PARAM_IS_AVAILABLE_INDEX_LISTING_ID = 1;
+    public static final int QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_IN = 2;
+    public static final int QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_OUT = 3;
 
     private static final long serialVersionUID = 1L;
 

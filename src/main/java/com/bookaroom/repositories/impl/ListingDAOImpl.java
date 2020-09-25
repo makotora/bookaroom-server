@@ -57,4 +57,18 @@ public class ListingDAOImpl implements ListingDAOCustom
         return query.getResultList();
     }
 
+    @Override
+    public boolean isAvailableOnDates(Long listingId, Date checkIn, Date checkOut)
+    {
+        Query query = em.createNamedQuery(ListingDTO.QUERY_NAME_GET_IF_IS_AVAILABLE);
+
+        query.setParameter(ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_LISTING_ID, listingId);
+        query.setParameter(ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_IN, checkIn);
+        query.setParameter(ListingDTO.QUERY_PARAM_IS_AVAILABLE_INDEX_CHECK_OUT, checkOut);
+
+        List<Object[]> results = query.getResultList();
+
+        return results != null && !results.isEmpty();
+    }
+
 }

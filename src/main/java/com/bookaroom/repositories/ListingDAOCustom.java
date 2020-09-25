@@ -16,4 +16,6 @@ public interface ListingDAOCustom
         Date checkIn,
         Date checkOut,
         Integer numberOfGuests);
+
+    public boolean isAvailableOnDates(Long listingId, Date checkIn, Date checkOut);
 }

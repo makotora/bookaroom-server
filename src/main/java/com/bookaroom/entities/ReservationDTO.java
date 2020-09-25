@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = ReservationDTO.TABLE_NAME)
@@ -29,55 +31,78 @@ public class ReservationDTO implements Serializable
     @Column(name = "USER_ID")
     private Long userId;
 
-    @Column(name = "BEGIN_DATE", columnDefinition = "DATE")
-    private Date beginDate;
+    @Column(name = "CHECK_IN")
+    @Temporal(TemporalType.DATE)
+    private Date checkIn;
 
-    @Column(name = "END_DATE", columnDefinition = "DATE")
-    private Date endDate;
+    @Column(name = "CHECK_OUT")
+    @Temporal(TemporalType.DATE)
+    private Date checkOut;
 
-    public long getListingId()
+    @Column(name = "GUESTS")
+    private Integer numberOfGuests;
+
+    public ReservationDTO()
+    {}
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    public Long getListingId()
     {
         return listingId;
     }
 
-    public void setListingId(long listingId)
+    public void setListingId(Long listingId)
     {
         this.listingId = listingId;
     }
 
-    public long getUserId()
+    public Long getUserId()
     {
         return userId;
     }
 
-    public void setUserId(long userId)
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Date getBeginDate()
+    public Date getCheckIn()
     {
-        return beginDate;
+        return checkIn;
     }
 
-    public void setBeginDate(Date beginDate)
+    public void setCheckIn(Date checkIn)
     {
-        this.beginDate = beginDate;
+        this.checkIn = checkIn;
     }
 
-    public Date getEndDate()
+    public Date getCheckOut()
     {
-        return endDate;
+        return checkOut;
     }
 
-    public void setEndDate(Date endDate)
+    public void setCheckOut(Date checkOut)
     {
-        this.endDate = endDate;
+        this.checkOut = checkOut;
     }
 
-    public static long getSerialversionuid()
+    public Integer getNumberOfGuests()
     {
-        return serialVersionUID;
+        return numberOfGuests;
+    }
+
+    public void setNumberOfGuests(Integer numberOfGuests)
+    {
+        this.numberOfGuests = numberOfGuests;
     }
 
     @Override
@@ -89,11 +114,14 @@ public class ReservationDTO implements Serializable
                + listingId
                + ", userId="
                + userId
-               + ", beginDate="
-               + beginDate
-               + ", endDate="
-               + endDate
+               + ", checkIn="
+               + checkIn
+               + ", checkOut="
+               + checkOut
+               + ", numberOfGuests="
+               + numberOfGuests
                + "]";
     }
+
 
 }

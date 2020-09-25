@@ -231,4 +231,16 @@ public class UserServiceImpl implements UserService
         return user.getUserRole() == UserRole.Host;
     }
 
+    @Override
+    public UserDTO findByListingId(Long listingId)
+        throws UserNotFoundException
+    {
+        List<UserDTO> listingUsers = userDAO.findByListingId(listingId);
+
+        if (listingUsers.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        return listingUsers.get(0);
+    }
 }

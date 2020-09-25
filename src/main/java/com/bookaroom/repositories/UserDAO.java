@@ -17,4 +17,6 @@ public interface UserDAO extends JpaRepository<UserDTO, Long>
 
     List<UserDTO> findByEmail(String email);
 
+    List<UserDTO> findByListingId(Long listingId);
+
 }

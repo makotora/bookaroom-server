@@ -35,11 +35,13 @@ import com.bookaroom.services.FileUploadService;
 import com.bookaroom.services.ListingAvailabilityService;
 import com.bookaroom.services.ListingPictureService;
 import com.bookaroom.services.ListingService;
+import com.bookaroom.services.ReservationService;
 import com.bookaroom.services.SearchService;
 import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
 import com.bookaroom.util.Utils;
 import com.bookaroom.web.dto.AvailabilityRange;
+import com.bookaroom.web.dto.ListingFullViewResponse;
 import com.bookaroom.web.dto.ListingResponse;
 import com.bookaroom.web.dto.ListingShortViewResponse;
 
@@ -65,6 +67,9 @@ public class ListingServiceImpl implements ListingService
 
     @Autowired
     private SearchService searches;
+
+    @Autowired
+    private ReservationService reservations;
 
     @Transactional
     @Override
@@ -304,13 +309,17 @@ public class ListingServiceImpl implements ListingService
 
     }
 
-    private Double getListingTotalPrice(ListingDTO listing, int people)
+    private Double getListingTotalPrice(ListingDTO listing, Integer numberOfGuests)
     {
-        return listing.getMinPrice() + listing.getCostPerExtraGuest() * people;
+        return Utils.roundDouble((listing.getMinPrice() == null ? 0 : listing.getMinPrice())
+                                 + (listing.getCostPerExtraGuest() == null ? 0
+                                                                           : listing.getCostPerExtraGuest())
+                                   * (numberOfGuests == null ? 1 : numberOfGuests),
+                                 2);
     }
 
     @Override
-    public ListingDTO findById(long id)
+    public ListingDTO findById(Long id)
         throws ListingNotFoundException
     {
         ListingDTO listing = listingDAO.findOne(id);
@@ -347,10 +356,10 @@ public class ListingServiceImpl implements ListingService
 
         FileUploadDTO mainPictureFile = fileUploads.findById(userListing.getMainPictureFileUploadId());
         String mainImagePath = mainPictureFile == null ? null
-                                                       : preparePicturePath(mainPictureFile.getServerPath());
+                                                       : Utils.prepareListingPicturePath(mainPictureFile.getServerPath());
         List<String> additionalPicturePaths = fileUploads.findListingPictureFiles(listingId)
                                                          .stream()
-                                                         .map(fo -> preparePicturePath(fo.getServerPath()))
+                                                         .map(fo -> Utils.prepareListingPicturePath(fo.getServerPath()))
                                                          .collect(Collectors.toList());
 
         return new ListingResponse(userListing.getId(),
@@ -395,13 +404,6 @@ public class ListingServiceImpl implements ListingService
         users.setListingId(userId, null);
 
         listingDAO.delete(userListing);
-    }
-
-    public static String preparePicturePath(String path)
-    {
-        return Utils.prepareResourcePathForServerFile(Constants.LISTING_PICTURES_DIRECTORY,
-                                                      path,
-                                                      Constants.LISTING_PICTURES_RESOURCE_HANDLER_PATH);
     }
 
     @Override
@@ -449,8 +451,82 @@ public class ListingServiceImpl implements ListingService
                                             cols[2] == null ? null : Utils.roundDouble((Double) cols[2], 2),
                                             Constants.DEFAULT_CURRENCY,
                                             cols[3] == null ? null
-                                                            : ListingServiceImpl.preparePicturePath((String) cols[3]),
+                                                            : Utils.prepareListingPicturePath((String) cols[3]),
                                             cols[4] == null ? null : ((BigDecimal) cols[4]).doubleValue());
+    }
+
+    @Override
+    public ListingFullViewResponse view(
+        Principal principal,
+        Long listingId,
+        Date checkIn,
+        Date checkOut,
+        Integer numberOfGuests)
+        throws ListingNotFoundException, UserNotFoundException, UserNotAuthenticatedException
+    {
+        UserDTO user = users.findByPrincipal(principal);
+        
+        ListingDTO listing = findById(listingId);
+
+        FileUploadDTO mainPictureFile = null;
+        if (listing.getMainPictureFileUploadId() != null) {
+            mainPictureFile = fileUploads.findById(listing.getMainPictureFileUploadId());
+        }
+
+        String mainPicturePath = mainPictureFile == null ? null
+                                                       : Utils.prepareListingPicturePath(mainPictureFile.getServerPath());
+        List<String> additionalPicturePaths = fileUploads.findListingPictureFiles(listingId)
+                                                         .stream()
+                                                         .map(fo -> Utils.prepareListingPicturePath(fo.getServerPath()))
+                                                         .collect(Collectors.toList());
+        
+        UserDTO host = users.findByListingId(listingId);
+        FileUploadDTO hostMainPictureFile = fileUploads.findById(host.getPictureFileUploadId());
+
+        String hostPicturePath = Utils.prepareUserPicturePath(hostMainPictureFile.getServerPath());
+        
+        boolean hasLastReservationPassed = reservations.hasLastReservationPassed(user.getId(),
+                                                                                 listingId,
+                                                                                 new Date());
+
+        boolean isAvailable = (checkIn != null && checkOut != null) ? (numberOfGuests == null
+                                                                       || numberOfGuests <= listing.getMaxGuests())
+                                                                      && isAvailableOnDates(listingId,
+                                                                                            checkIn,
+                                                                                            checkOut)
+                                                                    : false;
+                                                                      
+        Double totalPrice = getListingTotalPrice(listing, numberOfGuests);
+
+        return new ListingFullViewResponse(listing.getId(),
+                                           listing.getAddress(),
+                                           listing.getLongitude(),
+                                           listing.getLatitude(),
+                                           listing.getMaxGuests(),
+                                           listing.getMinPrice(),
+                                           listing.getCostPerExtraGuest(),
+                                           listing.getType().name(),
+                                           listing.getRules(),
+                                           listing.getDescription(),
+                                           listing.getNumberOfBeds(),
+                                           listing.getNumberOfBathrooms(),
+                                           listing.getNumberOfBedrooms(),
+                                           listing.getArea(),
+                                           listing.isHasLivingRoom(),
+                                           totalPrice,
+                                           Constants.DEFAULT_CURRENCY,
+                                           mainPicturePath,
+                                           additionalPicturePaths,
+                                           host.getId(),
+                                           hostPicturePath,
+                                           isAvailable,
+                                           hasLastReservationPassed);
+    }
+
+    @Override
+    public boolean isAvailableOnDates(Long listingId, Date checkIn, Date checkOut)
+    {
+        return listingDAO.isAvailableOnDates(listingId, checkIn, checkOut);
     }
 
 }

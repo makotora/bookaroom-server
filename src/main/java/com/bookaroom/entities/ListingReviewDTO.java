@@ -5,13 +5,40 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
+@NamedNativeQueries({
+    @NamedNativeQuery(
+        name = ListingReviewDTO.QUERY_NAME_FIND_HOST_REVIEWS,
+        query = "  SELECT"
+                + "      ru.id,"
+                + "      furu.server_path,"
+                + "      ru.name,"
+                + "      r.rating,"
+                + "      r.comments"
+                + "    FROM "
+                + UserDTO.TABLE_NAME
+                + " u"
+                + "    JOIN "
+                + ListingReviewDTO.TABLE_NAME
+                + " r on r.listing_id = u.listing_id"
+                + "    JOIN "
+                + UserDTO.TABLE_NAME
+                + " ru on ru.id = r.user_id"
+                + "    LEFT JOIN "
+                + FileUploadDTO.TABLE_NAME
+                + " furu on furu.id = ru.PICTURE_FILE_UPLOAD_ID"
+                + "    WHERE u.id = ?1")})
 @Entity
 @Table(name = ListingReviewDTO.TABLE_NAME)
 public class ListingReviewDTO
 {
     public static final String TABLE_NAME = "LISTING_REVIEWS";
+
+    public static final String QUERY_NAME_PREFIX = "ListingReviewDTO.";
+    public static final String QUERY_NAME_FIND_HOST_REVIEWS = QUERY_NAME_PREFIX + "findHostReviews";
 
     @Column(name = "ID")
     @Id

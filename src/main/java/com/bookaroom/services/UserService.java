@@ -14,6 +14,7 @@ import com.bookaroom.exceptions.ServiceException;
 import com.bookaroom.exceptions.UserNotAuthenticatedException;
 import com.bookaroom.exceptions.UserNotAuthorizedException;
 import com.bookaroom.exceptions.UserNotFoundException;
+import com.bookaroom.web.dto.UserProfileResponse;
 import com.bookaroom.web.dto.UserResponse;
 
 public interface UserService extends UserDetailsService
@@ -75,5 +76,8 @@ public interface UserService extends UserDetailsService
         UserRole userRole,
         MultipartFile userImage)
         throws UserNotFoundException, UserNotAuthenticatedException, ProvisioningException;
+
+    public UserProfileResponse getUserProfile(Long userId)
+        throws UserNotFoundException;
 
 }

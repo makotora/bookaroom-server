@@ -29,6 +29,7 @@ import com.bookaroom.services.UserService;
 import com.bookaroom.web.dto.ActionResponse;
 import com.bookaroom.web.dto.BooleanResponse;
 import com.bookaroom.web.dto.ChangePasswordRequest;
+import com.bookaroom.web.dto.UserProfileResponse;
 import com.bookaroom.web.dto.UserResponse;
 
 @RestController
@@ -172,6 +173,13 @@ public class UsersRestEndpoint
         throws UserNotFoundException, UserNotAuthenticatedException
     {
         return users.getUserResponse(principal);
+    }
+
+    @RequestMapping(value = "/getUserProfile", method = RequestMethod.GET)
+    public UserProfileResponse getUserProfile(@RequestParam("userId") Long userId)
+        throws UserNotFoundException, UserNotAuthenticatedException
+    {
+        return users.getUserProfile(userId);
     }
 
 }

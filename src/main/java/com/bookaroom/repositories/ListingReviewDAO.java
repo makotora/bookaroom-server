@@ -12,7 +12,8 @@ import com.bookaroom.entities.ListingReviewDTO;
 @Repository
 public interface ListingReviewDAO
     extends
-        JpaRepository<ListingReviewDTO, Long>
+        JpaRepository<ListingReviewDTO, Long>,
+        ListingReviewDAOCustom
 {
     public List<ListingReviewDTO> findByListingIdAndUserId(Long listingId, Long userId);
 

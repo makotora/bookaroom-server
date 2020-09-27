@@ -1,5 +1,6 @@
 package com.bookaroom.services.impl;
 
+import java.math.BigInteger;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import com.bookaroom.exceptions.UserNotFoundException;
 import com.bookaroom.repositories.ListingReviewDAO;
 import com.bookaroom.services.ListingReviewService;
 import com.bookaroom.services.UserService;
+import com.bookaroom.util.Utils;
 import com.bookaroom.web.dto.ListingReviewResponse;
 
 @Service
@@ -69,10 +71,14 @@ public class ListingReviewServiceImpl implements ListingReviewService
     @Override
     public List<ListingReviewResponse> viewByHostUserId(Long hostUserId)
     {
-        return findByHostUserId(hostUserId).stream()
-                                           .map(r -> new ListingReviewResponse(r.getUserId(),
-                                                                               r.getRating(),
-                                                                               r.getComments()))
+        return listingReviewDAO.findHostReviews(hostUserId)
+                               .stream()
+                               .map(cols -> new ListingReviewResponse(((BigInteger) cols[0]).longValue(),
+                                                                      (cols[1] != null ? Utils.prepareUserPicturePath((String) cols[1])
+                                                                                       : null),
+                                                                      (String) cols[2],
+                                                                      (Float) cols[3],
+                                                                      (String) cols[4]))
                                            .collect(Collectors.toList());
     }
 

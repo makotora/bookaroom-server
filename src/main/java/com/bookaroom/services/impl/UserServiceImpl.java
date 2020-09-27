@@ -31,6 +31,7 @@ import com.bookaroom.services.FileUploadService;
 import com.bookaroom.services.UserService;
 import com.bookaroom.util.Constants;
 import com.bookaroom.util.Utils;
+import com.bookaroom.web.dto.UserProfileResponse;
 import com.bookaroom.web.dto.UserResponse;
 
 @Service("Users")
@@ -304,5 +305,24 @@ public class UserServiceImpl implements UserService
                                 user.getUserRole().name(),
                                 user.getDetails(),
                                 picturePath);
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(Long userId)
+        throws UserNotFoundException
+    {
+        UserDTO user = findById(userId);
+
+        String picturePath = null;
+        FileUploadDTO pictureFile = fileUploads.findById(user.getPictureFileUploadId());
+        if (pictureFile != null) {
+            picturePath = Utils.prepareUserPicturePath(pictureFile.getServerPath());
+        }
+
+        return new UserProfileResponse(user.getName(),
+                                       user.getSurname(),
+                                       user.getEmail(),
+                                       user.getPhone(),
+                                       picturePath);
     }
 }

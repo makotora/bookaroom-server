@@ -67,7 +67,7 @@ import com.bookaroom.enums.ListingType;
               + "        AND l.address like CONCAT('%', s.country, '%')"
               + "      )"
               + "  ) x"
-              + "  ORDER BY x.AVERAGE_RATING LIMIT ?" + ListingDTO.QUERY_PARAM_RECOMM_INDEX_MAX_RESULTS
+              + "  ORDER BY x.AVERAGE_RATING DESC LIMIT ?" + ListingDTO.QUERY_PARAM_RECOMM_INDEX_MAX_RESULTS
          // @formatter:on
     ),
     @NamedNativeQuery(

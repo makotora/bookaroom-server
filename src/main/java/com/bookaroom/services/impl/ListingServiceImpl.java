@@ -451,7 +451,7 @@ public class ListingServiceImpl implements ListingService
                                             Constants.DEFAULT_CURRENCY,
                                             cols[3] == null ? null
                                                             : Utils.prepareListingPicturePath((String) cols[3]),
-                                            cols[4] == null ? null : (Double) cols[4]);
+                                            cols[4] == null ? null : Utils.roundDouble((Double) cols[4], 2));
     }
 
     @Override
